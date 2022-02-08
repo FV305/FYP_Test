@@ -48,6 +48,7 @@ import com.google.mlkit.vision.demo.CameraSourcePreview;
 import com.google.mlkit.vision.demo.GraphicOverlay;
 import com.google.mlkit.vision.demo.R;
 import com.google.mlkit.vision.demo.java.posedetector.PoseDetectorProcessor;
+import com.google.mlkit.vision.demo.java.posedetector.YogaProgramBeginner;
 import com.google.mlkit.vision.demo.preference.PreferenceUtils;
 import com.google.mlkit.vision.pose.PoseDetectorOptionsBase;
 
@@ -68,15 +69,20 @@ public final class LivePreviewActivity extends AppCompatActivity
   private CameraSourcePreview preview;
   private GraphicOverlay graphicOverlay;
   private String selectedModel = POSE_DETECTION;
-  private LinearLayout test;
   TextToSpeech t1;
   WebView view ;
+  private YogaProgramBeginner yogaProgramBeginner;
   @Override
+
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     Log.d(TAG, "onCreate");
 
     setContentView(R.layout.activity_vision_live_preview);
+
+    yogaProgramBeginner = new YogaProgramBeginner();
+
+
 
     preview = findViewById(R.id.preview_view);
     if (preview == null) {
@@ -86,7 +92,6 @@ public final class LivePreviewActivity extends AppCompatActivity
     if (graphicOverlay == null) {
       Log.d(TAG, "graphicOverlay is null");
     }
-
     List<String> options = new ArrayList<>();
 
     options.add(POSE_DETECTION);
@@ -126,6 +131,7 @@ public final class LivePreviewActivity extends AppCompatActivity
           }
         }
       });
+
      t1=new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {            // Create Speech
       @Override
       public void onInit(int status) {
@@ -174,7 +180,8 @@ public final class LivePreviewActivity extends AppCompatActivity
                   rescaleZ,
                   runClassification,
                   /* isStreamMode = */ true,
-                      t1)); // Speech
+                      t1,
+                      yogaProgramBeginner));// Speech
           break;
         default:
           Log.e(TAG, "Unknown model: " + model);

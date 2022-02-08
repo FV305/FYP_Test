@@ -16,12 +16,16 @@ import android.speech.tts.TextToSpeech;
 
 import androidx.annotation.RequiresApi;
 
+import com.google.android.gms.common.api.Api;
 import com.google.common.primitives.Ints;
 import com.google.mlkit.vision.common.PointF3D;
 import com.google.mlkit.vision.demo.GraphicOverlay;
 import com.google.mlkit.vision.demo.GraphicOverlay.Graphic;
 import com.google.mlkit.vision.pose.Pose;
 import com.google.mlkit.vision.pose.PoseLandmark;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /** Draw the detected pose in preview. */
@@ -39,6 +43,8 @@ public class PoseGraphic extends Graphic {
   private float zMin = Float.MAX_VALUE;
   private float zMax = Float.MIN_VALUE;
   TextToSpeech t1;
+  YogaProgramBeginner yogaProgramBeginner;
+  private List<YogaPose> yogaArray;
 
 
   private final List<String> poseClassification;
@@ -49,6 +55,7 @@ public class PoseGraphic extends Graphic {
   private final Paint testpaint;
   int LeftHipAngle;
   int RightHipAngle;
+  int l = 0;
 
   PoseGraphic(
       GraphicOverlay overlay,
@@ -57,13 +64,16 @@ public class PoseGraphic extends Graphic {
       boolean visualizeZ,
       boolean rescaleZForVisualization,
       List<String> poseClassification,
-      TextToSpeech t1) {
+      TextToSpeech t1,
+      YogaProgramBeginner yogaProgramBeginner) {
     super(overlay);
     this.pose = pose;
     this.showInFrameLikelihood = showInFrameLikelihood;
     this.visualizeZ = visualizeZ;
     this.rescaleZForVisualization = rescaleZForVisualization;
     this.t1 = t1;
+    this.yogaProgramBeginner = yogaProgramBeginner;
+
 
     this.poseClassification = poseClassification;
     classificationTextPaint = new Paint();
@@ -87,7 +97,7 @@ public class PoseGraphic extends Graphic {
   }
   @Override
   public void draw(Canvas canvas) {
-    for(int x=1 ; x <= 2;x++){
+
       List<PoseLandmark> landmarks = pose.getAllPoseLandmarks();
       if (landmarks.isEmpty()) {
         return;
@@ -107,21 +117,20 @@ public class PoseGraphic extends Graphic {
 
       // Draw all the points
       for (PoseLandmark landmark : landmarks) {
-        if(     landmark == pose.getPoseLandmark(PoseLandmark.NOSE) ||
+        if (landmark == pose.getPoseLandmark(PoseLandmark.NOSE) ||
                 landmark == pose.getPoseLandmark(PoseLandmark.LEFT_EYE_INNER) ||
                 landmark == pose.getPoseLandmark(PoseLandmark.LEFT_EYE) ||
                 landmark == pose.getPoseLandmark(PoseLandmark.LEFT_EYE_OUTER) ||
-                landmark == pose.getPoseLandmark(PoseLandmark.RIGHT_EYE_INNER)||
-                landmark == pose.getPoseLandmark(PoseLandmark.RIGHT_EYE)||
-                landmark == pose.getPoseLandmark(PoseLandmark.RIGHT_EYE_OUTER)||
-                landmark == pose.getPoseLandmark(PoseLandmark.LEFT_EAR)||
-                landmark == pose.getPoseLandmark(PoseLandmark.RIGHT_EAR)||
-                landmark == pose.getPoseLandmark(PoseLandmark.LEFT_MOUTH)||
+                landmark == pose.getPoseLandmark(PoseLandmark.RIGHT_EYE_INNER) ||
+                landmark == pose.getPoseLandmark(PoseLandmark.RIGHT_EYE) ||
+                landmark == pose.getPoseLandmark(PoseLandmark.RIGHT_EYE_OUTER) ||
+                landmark == pose.getPoseLandmark(PoseLandmark.LEFT_EAR) ||
+                landmark == pose.getPoseLandmark(PoseLandmark.RIGHT_EAR) ||
+                landmark == pose.getPoseLandmark(PoseLandmark.LEFT_MOUTH) ||
                 landmark == pose.getPoseLandmark(PoseLandmark.RIGHT_MOUTH)
         ) {
           drawPoint(canvas, landmark, testpaint);
-        }
-        else{
+        } else {
           drawPoint(canvas, landmark, whitePaint);
         }
 
@@ -130,11 +139,11 @@ public class PoseGraphic extends Graphic {
           zMax = max(zMax, landmark.getPosition3D().getZ());
         }
       }
-      drawPoint(canvas,pose.getPoseLandmark(PoseLandmark.NOSE),testpaint);
-      drawPoint(canvas,pose.getPoseLandmark(PoseLandmark.LEFT_EYE_INNER),testpaint);
-      drawPoint(canvas,pose.getPoseLandmark(PoseLandmark.LEFT_EYE),testpaint);
-      drawPoint(canvas,pose.getPoseLandmark(PoseLandmark.LEFT_EYE_OUTER),testpaint);
-      drawPoint(canvas,pose.getPoseLandmark(PoseLandmark.RIGHT_EYE_INNER),testpaint);
+      drawPoint(canvas, pose.getPoseLandmark(PoseLandmark.NOSE), testpaint);
+      drawPoint(canvas, pose.getPoseLandmark(PoseLandmark.LEFT_EYE_INNER), testpaint);
+      drawPoint(canvas, pose.getPoseLandmark(PoseLandmark.LEFT_EYE), testpaint);
+      drawPoint(canvas, pose.getPoseLandmark(PoseLandmark.LEFT_EYE_OUTER), testpaint);
+      drawPoint(canvas, pose.getPoseLandmark(PoseLandmark.RIGHT_EYE_INNER), testpaint);
 
       PoseLandmark nose = pose.getPoseLandmark(PoseLandmark.NOSE);
       PoseLandmark lefyEyeInner = pose.getPoseLandmark(PoseLandmark.LEFT_EYE_INNER);
@@ -172,24 +181,37 @@ public class PoseGraphic extends Graphic {
       PoseLandmark leftFootIndex = pose.getPoseLandmark(PoseLandmark.LEFT_FOOT_INDEX);
       PoseLandmark rightFootIndex = pose.getPoseLandmark(PoseLandmark.RIGHT_FOOT_INDEX);
 
-      // Face
-      LeftHipAngle = getAngle(leftElbow, leftShoulder, leftKnee);
-      RightHipAngle = getAngle(rightElbow, rightShoulder, rightKnee);
-      drawArcLeft(canvas, leftElbow, leftShoulder, leftKnee, leftPaint, LeftHipAngle);
-      drawArcRight(canvas, rightElbow,rightShoulder,rightKnee,leftPaint,RightHipAngle);
-      new Thread(new Runnable() {
-        @Override
-        public void run() {
-          try {
-            check(LeftHipAngle);
-          } catch (InterruptedException e) {
-            e.printStackTrace();
-          }
-        }
-      }).start();
+      yogaArray = new ArrayList<YogaPose>();
+      yogaArray = yogaProgramBeginner.getProgram();
+      YogaPose yoga = (YogaPose) yogaArray.get(0);
+
+
+
+      int firstjoint = (int)yoga.getBodyPart().get(0).get("firstjoint");
+      int secondjoint =(int) yoga.getBodyPart().get(0).get("secondjoint");
+      int thirdjoint = (int)yoga.getBodyPart().get(0).get("thirdjoint");
+      int angle = (int)yoga.getBodyPart().get(0).get("Angle");
+
+
+      LeftHipAngle = getAngle(pose.getPoseLandmark(firstjoint), pose.getPoseLandmark(secondjoint), pose.getPoseLandmark(thirdjoint));
+      drawArcLeft(canvas, pose.getPoseLandmark(firstjoint), pose.getPoseLandmark(secondjoint), pose.getPoseLandmark(thirdjoint), leftPaint, LeftHipAngle);
+
+      //LeftHipAngle = getAngle(leftElbow, leftShoulder, leftKnee);
+      //RightHipAngle = getAngle(rightElbow, rightShoulder, rightKnee);
+      //drawArcLeft(canvas, leftElbow, leftShoulder, leftKnee, leftPaint, LeftHipAngle);
+      //drawArcRight(canvas, rightElbow,rightShoulder,rightKnee,leftPaint,RightHipAngle);
+      //new Thread(new Runnable() {
+      //@Override
+      //public void run() {
+      // try {
+      //  check(LeftHipAngle);
+      //} catch (InterruptedException e) {
+      //  e.printStackTrace();
+      //}
+      //}
+      //}).start();
     };
 
-  }
     void check(int angle) throws InterruptedException {
     if(!t1.isSpeaking()){
       if( 180 >= angle && angle >= 165){
@@ -227,7 +249,7 @@ public class PoseGraphic extends Graphic {
                 text to speech
  1 pass -> 2
  2 pass -> 3
-
+pose array ["stand ",["bad","good ","perfect"],[{firstPoint:'',secondPoint:'',thirdPoint:'',rightAngle:''}], video:"" }     ]
   */
 
   static int getAngle(PoseLandmark firstPoint, PoseLandmark midPoint, PoseLandmark lastPoint) {

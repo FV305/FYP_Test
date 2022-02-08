@@ -51,6 +51,7 @@ public class PoseDetectorProcessor
   private final Context context;
   private final Executor classificationExecutor;
   TextToSpeech t1;
+  YogaProgramBeginner yogaProgramBeginner;
 
   private PoseClassifierProcessor poseClassifierProcessor;
   /** Internal class to hold Pose and classification results. */
@@ -80,7 +81,8 @@ public class PoseDetectorProcessor
           boolean rescaleZForVisualization,
           boolean runClassification,
           boolean isStreamMode,
-          TextToSpeech t1) {
+          TextToSpeech t1,
+          YogaProgramBeginner yogaProgramBeginner) {
     super(context);
     this.showInFrameLikelihood = showInFrameLikelihood;
     this.visualizeZ = visualizeZ;
@@ -91,6 +93,7 @@ public class PoseDetectorProcessor
     this.context = context;
     classificationExecutor = Executors.newSingleThreadExecutor();
     this.t1 = t1;
+    this.yogaProgramBeginner = yogaProgramBeginner;
   }
 
   @Override
@@ -149,7 +152,8 @@ public class PoseDetectorProcessor
             visualizeZ,
             rescaleZForVisualization,
             poseWithClassification.classificationResult,
-                t1)); // Speech
+                t1,
+                yogaProgramBeginner)); // Speech
   }
 
   @Override
