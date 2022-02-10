@@ -5,20 +5,14 @@ import java.util.HashMap;
 import java.util.List;
 
 public class YogaProgramBeginner {
-    List<YogaPose> YogaProgram;
-    final String NAME = "NAME";
-    final String VIDEO = "VIDEO";
-    final String SPEECH = "SPEECH";
-    final String BODYPART = "BODYPART";
+    List<YogaPose> YogaProgram = new ArrayList<YogaPose>();
 
     public YogaProgramBeginner(){
+        addYoga(new YogaPose("abc","video",YogaPose.addBodyPart(23,25,27,150 ,24,26,28,150),new String[]{"good", "perfect"}));
+        addYoga(new YogaPose("abc","video",YogaPose.addBodyPart(11,13,15,150 ,12,14,16,150),new String[]{"good", "perfect"}));
 
-        YogaPose yogaPose = new YogaPose("abc","video",YogaPose.addBodyPart(23,25,27,180),new String[]{"good", "perfect"});
-
-        addYoga(yogaPose);
     }
     public void addYoga(YogaPose yogaPose){
-        YogaProgram = new ArrayList<YogaPose>();
         YogaProgram.add(yogaPose);
     }
 

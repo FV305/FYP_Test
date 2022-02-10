@@ -13,6 +13,7 @@ import android.graphics.Path;
 import android.graphics.RectF;
 import android.os.Build;
 import android.speech.tts.TextToSpeech;
+import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
@@ -44,7 +45,7 @@ public class PoseGraphic extends Graphic {
   private float zMax = Float.MIN_VALUE;
   TextToSpeech t1;
   YogaProgramBeginner yogaProgramBeginner;
-  private List<YogaPose> yogaArray;
+  private List<YogaPose> yogaArray = new ArrayList<YogaPose>();
 
 
   private final List<String> poseClassification;
@@ -53,8 +54,8 @@ public class PoseGraphic extends Graphic {
   private final Paint rightPaint;
   private final Paint whitePaint;
   private final Paint testpaint;
-  int LeftHipAngle;
-  int RightHipAngle;
+  int Left;
+  int Right;
   int l = 0;
 
   PoseGraphic(
@@ -97,7 +98,6 @@ public class PoseGraphic extends Graphic {
   }
   @Override
   public void draw(Canvas canvas) {
-
       List<PoseLandmark> landmarks = pose.getAllPoseLandmarks();
       if (landmarks.isEmpty()) {
         return;
@@ -181,25 +181,30 @@ public class PoseGraphic extends Graphic {
       PoseLandmark leftFootIndex = pose.getPoseLandmark(PoseLandmark.LEFT_FOOT_INDEX);
       PoseLandmark rightFootIndex = pose.getPoseLandmark(PoseLandmark.RIGHT_FOOT_INDEX);
 
-      yogaArray = new ArrayList<YogaPose>();
       yogaArray = yogaProgramBeginner.getProgram();
-      YogaPose yoga = (YogaPose) yogaArray.get(0);
+      YogaPose yoga = yogaArray.get(l);
+      Log.v("Yoga Array " , yoga + "");
+      int firstjoint1 = (int)yoga.getBodyPart().get("firstjoint1");
+      int secondjoint1 =(int) yoga.getBodyPart().get("secondjoint1");
+      int thirdjoint1 = (int)yoga.getBodyPart().get("thirdjoint1");
+      int angle1 = (int)yoga.getBodyPart().get("angle1");
 
+      int firstjoint2 = (int)yoga.getBodyPart().get("firstjoint2");
+      int secondjoint2 =(int) yoga.getBodyPart().get("secondjoint2");
+      int thirdjoint2 = (int)yoga.getBodyPart().get("thirdjoint2");
+      int angle2 = (int)yoga.getBodyPart().get("angle2");
 
+      Left = getAngle(pose.getPoseLandmark(firstjoint1), pose.getPoseLandmark(secondjoint1), pose.getPoseLandmark(thirdjoint1));
+      drawArcLeft(canvas, pose.getPoseLandmark(firstjoint1), pose.getPoseLandmark(secondjoint1), pose.getPoseLandmark(thirdjoint1), leftPaint, Left);
+      Right = getAngle(pose.getPoseLandmark(firstjoint2), pose.getPoseLandmark(secondjoint2), pose.getPoseLandmark(thirdjoint2));
+      drawArcRight(canvas, pose.getPoseLandmark(firstjoint2), pose.getPoseLandmark(secondjoint2), pose.getPoseLandmark(thirdjoint2), leftPaint, Right);
 
-      int firstjoint = (int)yoga.getBodyPart().get(0).get("firstjoint");
-      int secondjoint =(int) yoga.getBodyPart().get(0).get("secondjoint");
-      int thirdjoint = (int)yoga.getBodyPart().get(0).get("thirdjoint");
-      int angle = (int)yoga.getBodyPart().get(0).get("Angle");
-
-
-      LeftHipAngle = getAngle(pose.getPoseLandmark(firstjoint), pose.getPoseLandmark(secondjoint), pose.getPoseLandmark(thirdjoint));
-      drawArcLeft(canvas, pose.getPoseLandmark(firstjoint), pose.getPoseLandmark(secondjoint), pose.getPoseLandmark(thirdjoint), leftPaint, LeftHipAngle);
-
-      //LeftHipAngle = getAngle(leftElbow, leftShoulder, leftKnee);
-      //RightHipAngle = getAngle(rightElbow, rightShoulder, rightKnee);
-      //drawArcLeft(canvas, leftElbow, leftShoulder, leftKnee, leftPaint, LeftHipAngle);
-      //drawArcRight(canvas, rightElbow,rightShoulder,rightKnee,leftPaint,RightHipAngle);
+      if(angle1 <= Left && angle2 <= Right){
+          l++;
+          Log.v("Angle " , angle1 +""+ angle2 + "");
+          Log.v("Left Right " , Left +""+ Right + "");
+          Log.v("L " , l +"");
+      }
       //new Thread(new Runnable() {
       //@Override
       //public void run() {
@@ -211,7 +216,6 @@ public class PoseGraphic extends Graphic {
       //}
       //}).start();
     };
-
     void check(int angle) throws InterruptedException {
     if(!t1.isSpeaking()){
       if( 180 >= angle && angle >= 165){

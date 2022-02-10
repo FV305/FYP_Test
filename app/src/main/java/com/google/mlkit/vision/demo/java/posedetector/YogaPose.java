@@ -8,24 +8,27 @@ public class YogaPose {
     private String name;
     private String video;
     private String[] Speech ;
-    private List<HashMap> BodyPart;
+    private HashMap BodyPart;
 
-    public YogaPose(String name, String video, List<HashMap> bodyPart, String[] speech){
+    public YogaPose(String name, String video, HashMap bodyPart, String[] speech){
         this.name = name;
         this.video = video;
         this.BodyPart = bodyPart;
         this.Speech = speech;
     }
 
-    public static List<HashMap> addBodyPart(int firstJoint, int secondJoint, int thirdJoint, int angle){
-        HashMap<String, Integer> bodyPartMap = new HashMap();
-        List<HashMap> BodyPart = new ArrayList<>();
-        bodyPartMap.put("firstjoint", firstJoint);
-        bodyPartMap.put("secondjoint", secondJoint);
-        bodyPartMap.put("thirdjoint", thirdJoint);
-        bodyPartMap.put("Angle", angle);
+    public static HashMap addBodyPart(int firstJoint1, int secondJoint1, int thirdJoint1, int angle1 , int firstJoint2, int secondJoint2 , int thirdJoint2, int angle2 ){
+        HashMap<String, Integer> BodyPart = new HashMap();
 
-        BodyPart.add(bodyPartMap);
+        BodyPart.put("firstjoint1", firstJoint1);
+        BodyPart.put("secondjoint1", secondJoint1);
+        BodyPart.put("thirdjoint1", thirdJoint1);
+        BodyPart.put("angle1", angle1);
+        BodyPart.put("firstjoint2", firstJoint2);
+        BodyPart.put("secondjoint2", secondJoint2);
+        BodyPart.put("thirdjoint2", thirdJoint2);
+        BodyPart.put("angle2", angle2);
+
         return BodyPart;
     }
 
@@ -36,7 +39,7 @@ public class YogaPose {
     public String getVideo(){
         return video;
     }
-    public List<HashMap> getBodyPart(){
+    public HashMap getBodyPart(){
         return BodyPart;
     }
     public String[] getSpeech(){
