@@ -8,7 +8,7 @@ public class YogaProgramBeginner {
     List<YogaPose> YogaProgram = new ArrayList<YogaPose>();
 
     public YogaProgramBeginner(){
-        addYoga(new YogaPose("abc","video",YogaPose.addBodyPart(23,25,27,150 ,24,26,28,150),new String[]{"good", "perfect"}));
+        addYoga(new YogaPose("abc","video",YogaPose.addBodyPart(15,23,27,150 ,16,24,28,150),new String[]{"good", "perfect"}));
         addYoga(new YogaPose("abc","video",YogaPose.addBodyPart(11,13,15,150 ,12,14,16,150),new String[]{"good", "perfect"}));
 
     }

@@ -12,6 +12,7 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
 import android.os.Build;
+import android.os.CountDownTimer;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
 
@@ -46,7 +47,7 @@ public class PoseGraphic extends Graphic {
   TextToSpeech t1;
   YogaProgramBeginner yogaProgramBeginner;
   private List<YogaPose> yogaArray = new ArrayList<YogaPose>();
-
+  CountDownTimer timer;
 
   private final List<String> poseClassification;
   private final Paint classificationTextPaint;
@@ -54,9 +55,10 @@ public class PoseGraphic extends Graphic {
   private final Paint rightPaint;
   private final Paint whitePaint;
   private final Paint testpaint;
-  int Left;
-  int Right;
-  int l = 0;
+  int Left = 0 ;
+  int Right = 0 ;
+  static int l = 0;
+  static int count = 0 ;
 
   PoseGraphic(
       GraphicOverlay overlay,
@@ -182,8 +184,9 @@ public class PoseGraphic extends Graphic {
       PoseLandmark rightFootIndex = pose.getPoseLandmark(PoseLandmark.RIGHT_FOOT_INDEX);
 
       yogaArray = yogaProgramBeginner.getProgram();
+      Log.v("Test " , l + "");
       YogaPose yoga = yogaArray.get(l);
-      Log.v("Yoga Array " , yoga + "");
+      Log.v("Test 1" , l + "");
       int firstjoint1 = (int)yoga.getBodyPart().get("firstjoint1");
       int secondjoint1 =(int) yoga.getBodyPart().get("secondjoint1");
       int thirdjoint1 = (int)yoga.getBodyPart().get("thirdjoint1");
@@ -193,18 +196,63 @@ public class PoseGraphic extends Graphic {
       int secondjoint2 =(int) yoga.getBodyPart().get("secondjoint2");
       int thirdjoint2 = (int)yoga.getBodyPart().get("thirdjoint2");
       int angle2 = (int)yoga.getBodyPart().get("angle2");
+      String good = yoga.getSpeech()[0];
+      String perfect = yoga.getSpeech()[1];
 
       Left = getAngle(pose.getPoseLandmark(firstjoint1), pose.getPoseLandmark(secondjoint1), pose.getPoseLandmark(thirdjoint1));
       drawArcLeft(canvas, pose.getPoseLandmark(firstjoint1), pose.getPoseLandmark(secondjoint1), pose.getPoseLandmark(thirdjoint1), leftPaint, Left);
       Right = getAngle(pose.getPoseLandmark(firstjoint2), pose.getPoseLandmark(secondjoint2), pose.getPoseLandmark(thirdjoint2));
       drawArcRight(canvas, pose.getPoseLandmark(firstjoint2), pose.getPoseLandmark(secondjoint2), pose.getPoseLandmark(thirdjoint2), leftPaint, Right);
 
-      if(angle1 <= Left && angle2 <= Right){
-          l++;
-          Log.v("Angle " , angle1 +""+ angle2 + "");
-          Log.v("Left Right " , Left +""+ Right + "");
-          Log.v("L " , l +"");
-      }
+
+      if(l < yogaArray.size()){
+          if(angle1 <= Left && angle2 <= Right){
+              timer =  new CountDownTimer(1000, 1000) {
+
+                  public void onTick(long millisUntilFinished) {
+                      if(angle1 <= Left && angle2 <= Right) {
+                          count ++ ;
+                          if(!t1.isSpeaking()){
+                              t1.speak(perfect, TextToSpeech.QUEUE_FLUSH, null,null);
+                              t1.playSilentUtterance(4000,TextToSpeech.QUEUE_ADD,null);
+                          }
+                          if(count ==200 ){if(l < 1){l++;}}
+                          Log.v("Cancel ", count+"");
+                      }
+                      else{
+                          count = 0 ;
+                      }
+                  }
+
+                  public void onFinish() {
+                      /*if(angle1 <= Left && angle2 <= Right){
+                          Log.v("Finish ", "pass");
+                          if(l < 1){l++;}
+                      }
+                      else{
+                          cancel();
+                      }
+                    */
+                  }
+              }.start();
+
+          } else{
+              if(!t1.isSpeaking()){
+                  t1.speak(good, TextToSpeech.QUEUE_FLUSH, null,null);
+                  t1.playSilentUtterance(4000,TextToSpeech.QUEUE_ADD,null);
+              }
+              count =0 ;
+          }
+
+              Log.v("Angle " , angle1 +""+ angle2 + "");
+              Log.v("Left Right " , Left +""+ Right + "");
+              Log.v("Test 3" , l +"");
+          }
+
+
+
+
+
       //new Thread(new Runnable() {
       //@Override
       //public void run() {
@@ -219,16 +267,16 @@ public class PoseGraphic extends Graphic {
     void check(int angle) throws InterruptedException {
     if(!t1.isSpeaking()){
       if( 180 >= angle && angle >= 165){
-        t1.speak("Perfect, Hold For 5 seconds", TextToSpeech.QUEUE_FLUSH, null);
-        t1.playSilence(3000,TextToSpeech.QUEUE_ADD,null);
+        t1.speak("Perfect, Hold For 5 seconds", TextToSpeech.QUEUE_FLUSH, null,null);
+        t1.playSilentUtterance(3000,TextToSpeech.QUEUE_ADD,null);
       }
       else if(164>=angle && angle >= 100){
-        t1.speak("good", TextToSpeech.QUEUE_FLUSH, null);
-        t1.playSilence(3000,TextToSpeech.QUEUE_ADD,null);
+        t1.speak("good", TextToSpeech.QUEUE_FLUSH, null,null);
+        t1.playSilentUtterance(3000,TextToSpeech.QUEUE_ADD,null);
       }
       else{
-        t1.speak("lift up your arms", TextToSpeech.QUEUE_FLUSH, null);
-        t1.playSilence(3000,TextToSpeech.QUEUE_ADD,null);
+        t1.speak("lift up your arms", TextToSpeech.QUEUE_FLUSH, null,null);
+        t1.playSilentUtterance(3000,TextToSpeech.QUEUE_ADD,null);
       }
     }
   }
