@@ -206,17 +206,17 @@ public class PoseGraphic extends Graphic {
 
 
       if(l < yogaArray.size()){
-          if(angle1 <= Left && angle2 <= Right){
+          if(Left>=angle1 && angle1+30 >= Left && Right >= angle2 && angle2+30 >= Right){
               timer =  new CountDownTimer(1000, 1000) {
 
                   public void onTick(long millisUntilFinished) {
-                      if(angle1 <= Left && angle2 <= Right) {
+                      if(Left>=angle1 && angle1+30 >= Left && Right >= angle2 && angle2+30 >= Right) {
                           count ++ ;
                           if(!t1.isSpeaking()){
                               t1.speak(perfect, TextToSpeech.QUEUE_FLUSH, null,null);
                               t1.playSilentUtterance(4000,TextToSpeech.QUEUE_ADD,null);
                           }
-                          if(count ==200 ){if(l < 1){l++;}}
+                          if(count ==200 ){if(l < yogaArray.size()){l++;}}
                           Log.v("Cancel ", count+"");
                       }
                       else{
@@ -349,12 +349,14 @@ pose array ["stand ",["bad","good ","perfect"],[{firstPoint:'',secondPoint:'',th
      paint.setStyle(Paint.Style.STROKE);
      paint.setColor(Color.YELLOW);
      paint.setStrokeWidth(5f);
-     if(angle <40 ){
+     /*if(angle <40 ){
        paint.setAlpha(0);
      }
      else{
        paint.setAlpha(150);
      };
+
+      */
      paint.setStrokeCap(Paint.Cap.ROUND);
      canvas.drawPath(p, paint);
      paint.setAlpha(150);
@@ -373,12 +375,14 @@ pose array ["stand ",["bad","good ","perfect"],[{firstPoint:'',secondPoint:'',th
     paint.setStyle(Paint.Style.STROKE);
     paint.setColor(Color.YELLOW);
     paint.setStrokeWidth(5f);
-    if(angle <30 ){
+   /* if(angle <30 ){
       paint.setAlpha(0);
     }
     else{
       paint.setAlpha(150);
     };
+
+    */
     paint.setStrokeCap(Paint.Cap.ROUND);
     canvas.drawPath(p, paint);
     paint.setAlpha(150);
