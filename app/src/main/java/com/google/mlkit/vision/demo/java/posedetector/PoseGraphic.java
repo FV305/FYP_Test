@@ -1,11 +1,14 @@
 
 package com.google.mlkit.vision.demo.java.posedetector;
 
+import static androidx.camera.core.CameraX.getContext;
 import static java.lang.Math.atan2;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.lang.Math.sqrt;
 
+import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -17,12 +20,17 @@ import android.speech.tts.TextToSpeech;
 import android.util.Log;
 
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.common.api.Api;
 import com.google.common.primitives.Ints;
 import com.google.mlkit.vision.common.PointF3D;
+import com.google.mlkit.vision.demo.EntryChoiceActivity;
 import com.google.mlkit.vision.demo.GraphicOverlay;
 import com.google.mlkit.vision.demo.GraphicOverlay.Graphic;
+import com.google.mlkit.vision.demo.YogaActivity;
+import com.google.mlkit.vision.demo.YogaCompletedActivity;
 import com.google.mlkit.vision.pose.Pose;
 import com.google.mlkit.vision.pose.PoseLandmark;
 
@@ -104,7 +112,11 @@ public class PoseGraphic extends Graphic {
       if (landmarks.isEmpty()) {
         return;
       }
-
+      if(l == 2){
+          Intent intent = new Intent(getApplicationContext(), YogaCompletedActivity.class);
+          intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+          getApplicationContext().startActivity(intent);
+      }
       // Draw pose classification text.
       float classificationX = POSE_CLASSIFICATION_TEXT_SIZE * 0.5f;
       for (int i = 0; i < poseClassification.size(); i++) {
@@ -209,6 +221,7 @@ public class PoseGraphic extends Graphic {
           if(Left>=angle1 && angle1+30 >= Left && Right >= angle2 && angle2+30 >= Right){
               timer =  new CountDownTimer(1000, 1000) {
 
+                  @SuppressLint("RestrictedApi")
                   public void onTick(long millisUntilFinished) {
                       if(Left>=angle1 && angle1+30 >= Left && Right >= angle2 && angle2+30 >= Right) {
                           count ++ ;
@@ -216,7 +229,11 @@ public class PoseGraphic extends Graphic {
                               t1.speak(perfect, TextToSpeech.QUEUE_FLUSH, null,null);
                               t1.playSilentUtterance(4000,TextToSpeech.QUEUE_ADD,null);
                           }
-                          if(count ==200 ){if(l < yogaArray.size()){l++;}}
+                          if(count ==200 ){
+                              if(l < yogaArray.size()){
+                              l++;
+                              }
+                          }
                           Log.v("Cancel ", count+"");
                       }
                       else{

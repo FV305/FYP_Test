@@ -30,7 +30,9 @@
         android:icon="@drawable/logo_mlkit"
         android:label=""
         android:theme="@style/Theme.AppCompat">
-        <activity android:name=".YogaActivity"></activity>
+        <activity android:name=".YogaCompletedActivity"
+                  android:screenOrientation="landscape"></activity>
+        <activity android:name=".YogaActivity" />
         <activity android:name=".ProfileActivity" />
         <activity android:name=".MedActivity" />
         <activity android:name=".FoodActivity" />
