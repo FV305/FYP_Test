@@ -16,6 +16,7 @@
 
 package com.google.mlkit.vision.demo.preference;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build.VERSION_CODES;
@@ -37,6 +38,13 @@ import com.google.mlkit.vision.objects.defaults.ObjectDetectorOptions;
 import com.google.mlkit.vision.pose.PoseDetectorOptionsBase;
 import com.google.mlkit.vision.pose.accurate.AccuratePoseDetectorOptions;
 import com.google.mlkit.vision.pose.defaults.PoseDetectorOptions;
+
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Calendar;
+
+import kotlin.Metadata;
+import kotlin.jvm.internal.Intrinsics;
 
 /** Utility class to retrieve shared preferences. */
 public class PreferenceUtils {
@@ -326,4 +334,6 @@ public class PreferenceUtils {
   }
 
   private PreferenceUtils() {}
+
+
 }

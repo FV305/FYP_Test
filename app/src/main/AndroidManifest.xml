@@ -28,8 +28,10 @@
     <application
         android:name="androidx.multidex.MultiDexApplication"
         android:icon="@drawable/logo_mlkit"
+        android:supportsRtl="true"
         android:label=""
-        android:theme="@style/Theme.AppCompat">
+        android:theme="@style/Theme.AppCompat"
+        android:allowBackup="true">
         <activity android:name=".YogaCompletedActivity"
                   android:screenOrientation="landscape"></activity>
         <activity android:name=".YogaActivity" />
