@@ -29,7 +29,6 @@ import com.google.mlkit.vision.common.PointF3D;
 import com.google.mlkit.vision.demo.EntryChoiceActivity;
 import com.google.mlkit.vision.demo.GraphicOverlay;
 import com.google.mlkit.vision.demo.GraphicOverlay.Graphic;
-import com.google.mlkit.vision.demo.YogaActivity;
 import com.google.mlkit.vision.demo.YogaCompletedActivity;
 import com.google.mlkit.vision.pose.Pose;
 import com.google.mlkit.vision.pose.PoseLandmark;
